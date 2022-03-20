@@ -38,7 +38,6 @@ public class add_contact extends AppCompatActivity {
     Button btn_ImageAdd,btn_AddConfirm,btn_Cancle;
     EditText edt_DeviceName,edt_DeviceWattage,edt_ID;
     Switch swtStatusAdd;
-
     public void Connect_ID()
     {
         imageView=findViewById(R.id.ImageAdd);

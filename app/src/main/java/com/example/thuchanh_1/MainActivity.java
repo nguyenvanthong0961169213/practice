@@ -32,18 +32,19 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Device> arrDevice;
     ArrayList<Device> arrDelete;
     My_Adapter Adapter;
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == RESULT_OK) {
-                        //Intent intent = result.getData();
-                         device = (Device) getIntent().getExtras().get("device");
-
-                    }
-                }
-            }
-    );
+    myDB mysqliteDB;
+//    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+//            new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+//                @Override
+//                public void onActivityResult(ActivityResult result) {
+//                    if (result.getResultCode() == RESULT_OK) {
+//                        //Intent intent = result.getData();
+//                         device = (Device) getIntent().getExtras().get("device");
+//
+//                    }
+//                }
+//            }
+//    );
 
     public void Connect_ID() {
         edt_Device = findViewById(R.id.edt_Device);
@@ -53,11 +54,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void Update_data_ArrDevice() {
+        mysqliteDB=new myDB(this,"DeviceDB_2",null,1);
         arrDevice = new ArrayList<>();
-//       arrDevice.add(new Device(1,R.drawable.sao,"Bóng Điện","220V",true));
-//       arrDevice.add(new Device(2,R.drawable.sao,"Bình Nóng","Công suất 1000W",false));
-//       arrDevice.add(new Device(2,R.drawable.sao,"Điện Thoại","Công suất 1000W",false));
-//       arrDevice.add(new Device(2,R.drawable.sao,"Bình Nóng","Công suất 1000W",false));
+        arrDevice= mysqliteDB.getAllDevice();
+      //  Toast.makeText(this,"số phần tử sqlite"+mysqliteDB.getAllDevice().size(),Toast.LENGTH_LONG).show();
+ //       arrDevice = new ArrayList<>();
+      //  mysqliteDB.AddDevice(new Device(1,"","Bóng Điện","220V",true));
+        Toast.makeText(this,"số phần tử sqlite"+mysqliteDB.getAllDevice().size(),Toast.LENGTH_LONG).show();
+   //    arrDevice.add(new Device(3,R.drawable.sao,"Bình Nóng","Công suất 1000W",false));
+ //      arrDevice.add(new Device(4,R.drawable.sao,"Điện Thoại","Công suất 1000W",false));
+//       arrDevice.add(new Device(5,R.drawable.sao,"Bình Nóng","Công suất 1000W",false));
 //       arrDevice.add(new Device(2,R.drawable.sao,"Điện Thoại","Công suất 1000W",false));
 //       arrDevice.add(new Device(2,R.drawable.sao,"Bình Nóng","Công suất 1000W",false));
 //       arrDevice.add(new Device(2,R.drawable.sao,"Điện Thoại","Công suất 1000W",false));
@@ -68,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     public void Update_data_Adapter() {
         Adapter = new My_Adapter(MainActivity.this, arrDevice);
         lsp_Device.setAdapter(Adapter);
-
     }
 
     @Override
@@ -89,10 +94,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         for (int k = 0; k < arrDevice.size(); k++) {
-                            if (arrDevice.get(k).isStatus() == false) {
-                                arrDevice.remove(arrDevice.get(k));
-                                k--;
-                                Adapter.notifyDataSetChanged();
+                            if (arrDevice.get(k).isStatus()== true) {
+                                //arrDevice.remove(arrDevice.get(k));
+                                mysqliteDB.deteteContact(arrDevice.get(k).getID());
+                               // k--;
+                                Update_data_ArrDevice();
+                                Update_data_Adapter();
+
+//                                arrDevice=mysqliteDB.getAllDevice();
+////                                Adapter.notifyDataSetChanged();
                             }
                         }
                     }
@@ -139,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Lấy dữ liệu từ newContact trả về
-//        Bundle bundle=data.getExtras();
-//        Device device = (Device) bundle.get("device");
+         Bundle bundle=data.getExtras();
+         Device device = (Device) bundle.get("device");
 //        int ID=bundle.getInt("ID");
 //        String DeviceName=bundle.getString("DeviceName");
 //        String IMG =bundle.getString("Image");
@@ -153,8 +163,19 @@ public class MainActivity extends AppCompatActivity {
 //            Adapter.notifyDataSetChanged();
 //        }
 //    }
-        arrDevice.add(device);
-        Adapter.notifyDataSetChanged();
-        lsp_Device.setAdapter(Adapter);
+        if(requestCode==100&&resultCode==200)
+        {
+            Toast.makeText(this,"số phần tử sqlite"+mysqliteDB.getAllDevice().size(),Toast.LENGTH_LONG).show();
+            mysqliteDB.AddDevice(device);
+            Update_data_ArrDevice();
+            Update_data_Adapter();
+//            arrDevice.add(device);
+//
+//            arrDevice= mysqliteDB.getAllDevice();
+//            Adapter.notifyDataSetChanged();
+//            lsp_Device.setAdapter(Adapter);
+
+          //  Toast.makeText(this,"số phần tử sqlite"+mysqliteDB.getAllDevice().size(),Toast.LENGTH_LONG).show();
+        }
     }
 }
